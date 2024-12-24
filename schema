@@ -1,0 +1,111 @@
+const Ajv = require('ajv');
+const addErrors = require('ajv-errors');
+
+const ajv = new Ajv({ allErrors: true, verbose: true }); 
+addErrors(ajv); 
+
+const schema = {
+  type: "object",
+  properties: {
+    subscriptionType: {
+      type: "string",
+      enum: ["onetime", "recurring"],
+      errorMessage: "subscriptionType is required and should be 'onetime' or 'recurring'"
+    },
+    subscriptionName: {
+      type: "string",
+      errorMessage: "subscriptionName is required and should be a non-empty string"
+    },
+    every: {
+      type: "number",
+      errorMessage: "every is required"
+    },
+    period: {
+      type: "string",
+      enum: ["day", "week", "month", "year"],
+      errorMessage: "period is required and should be one of 'day', 'week', 'month', or 'year'"
+    },
+    startDate: {
+      type: "string",
+      errorMessage: "startDate is required and should be a non-empty string"
+    },
+    endDate: {
+      type: "string",
+      errorMessage: "endDate is required and should be a non-empty string"
+    },
+    totalSessions: {
+      type: "number",
+      errorMessage: "totalSessions is required and should be a number"
+    },
+    subscriptionId: {
+      type: "string",
+      errorMessage: "Provide a valid subscriptionId!"
+    },
+    gymMemberId: {
+      type: "string",
+      errorMessage: "Provide a valid gymMemberId!"
+    },
+    gymId: {
+      type: "string",
+      errorMessage: "Provide a valid gymId!"
+    },
+    organizationId: {
+      type: "string",
+      errorMessage: "organizationId is required"
+    }
+  },
+  required: [
+    "subscriptionType",
+    "subscriptionName",
+    "every",
+    "period",
+    "startDate",
+    "endDate",
+    "totalSessions",
+    "subscriptionId",
+    "gymMemberId",
+    "gymId",
+    "organizationId"
+  ],
+  errorMessage: {
+    required: {
+      subscriptionType: "subscriptionType is required",
+      subscriptionName: "subscriptionName is required",
+      every: "every is required",
+      period: "period is required",
+      startDate: "startDate is required",
+      endDate: "endDate is required",
+      totalSessions: "totalSessions is required",
+      subscriptionId: "subscriptionId is required",
+      gymMemberId: "gymMemberId is required",
+      gymId: "gymId is required",
+      organizationId: "organizationId is required"
+    }
+  }
+};
+
+const validate = ajv.compile(schema);
+
+
+const data = {
+  subscriptionType: "onetime",
+  subscriptionName: "Premium Plan",
+  every: 10,
+  period: "month",
+  startDate: "2024-01-01",
+  endDate: "2025-01-01",
+  totalSessions: 50,
+  subscriptionId: "sub123456",
+  gymMemberId: "mem001",
+  gymId: "gym001",
+  organizationId: "org001"
+};
+
+const valid = validate(data);
+
+
+if (!valid) {
+  console.log("Validation failed:", validate.errors);
+} else {
+  console.log("Validation succeeded!");
+}
