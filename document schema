@@ -1,0 +1,65 @@
+const Ajv = require('ajv');
+const ajvErrors = require('ajv-errors');
+const ajv = new Ajv({ allErrors: true, jsonPointers: true });  // Enables detailed error reporting
+ajvErrors(ajv);  // Register ajv-errors plugin to support custom error messages
+
+// Define the schema
+const schema = {
+  type: 'object',
+  properties: {
+    documentHeading: { 
+      type: 'string',
+      errorMessage: 'documentHeading is required'
+    },
+    documentContent: { 
+      type: 'string',
+      errorMessage: 'documentContent is required and should be a non-empty string'
+    },
+    createdAt: { 
+      type: 'string',
+      errorMessage: 'createdAt is required'
+    },
+    updatedAt: { 
+      type: 'string',
+      errorMessage: 'updatedAt is required'
+    },
+    documentId: { 
+      type: 'string',
+      errorMessage: 'Provide a valid documentId'
+    },
+  },
+  required: ['documentHeading', 'documentContent', 'createdAt', 'updatedAt', 'documentId'],
+  additionalProperties: false, // If you don't want extra properties to be allowed
+  errorMessage: {
+    required: {
+      documentHeading: 'documentHeading is required',
+      documentContent: 'documentContent is required and should be a non-empty string',
+      createdAt: 'createdAt is required',
+      updatedAt: 'updatedAt is required',
+      documentId: 'Provide a valid documentId',
+    }
+  }
+};
+
+// Compile the schema
+const validate = ajv.compile(schema);
+
+// Example data to validate
+const data = {
+  documentHeading: "Sample Document", 
+  documentContent: "Sample content",   
+  createdAt: "2024-01-01",
+  updatedAt: "2024-01-02",
+  documentId: "doc-12345"  
+};
+
+// Perform validation
+const valid = validate(data);
+
+// Check validation result
+if (!valid) {
+  console.log("Validation failed:");
+  console.log(validate.errors);
+} else {
+  console.log("Valid data!");
+}
